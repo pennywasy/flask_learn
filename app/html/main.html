@@ -7,9 +7,42 @@
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css')}}">
 </head>
 <body>
-	<div class="wrapper">
-		<h1>Hello {{name}}</h1>
-		<a href="../logout">Выйти</a>
+	<div class="personal__wrapper">
+		<div class="personal__avatar">
+			<img src="" alt="none">
+			<form class="form__avatar" enctype="">
+				<input type="file" name="avatar">
+				<button>Загрузить</button>
+			</form>
+		</div>
+		<form class="form__entries" method="POST" action="loginEntries">
+			<select name='event'>
+				{% for item in events %}
+					<option value='{{item.id}}'>{{item.description}}</option>
+				
+				{% endfor %}	
+			</select>
+			<button>Записаться</button>
+		</form>
+	</div>
+
+	<div class="events__wrapper">
+		<table border="1">
+			<thead>
+				<tr>
+					<th width="300px">
+						Мероприятие
+					</th>
+					<th width="150px">
+						Дата
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{for}}
+			</tbody>
+
+		</table>
 	</div>
 </body>
 </html>

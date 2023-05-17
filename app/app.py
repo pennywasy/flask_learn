@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, json, session
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
+from sqlalchemy.schema import PrimaryKeyConstraint
 import os
 
 
@@ -16,22 +17,67 @@ db = SQLAlchemy(app)
 class User(db.Model):
 
 	__tablename__ = "user"
-	id = db.Column(db.Integer, primary_key=True)
-	login = db.Column(db.String(100), nullable=False)
+	id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	login = db.Column(db.String(100), nullable=False, unique=True)
 	password = db.Column(db.String(100), nullable=False)
+	user_admin_id = db.relationship('Admins', backref='admin')
+	user_entrie_id = db.relationship('Entries', backref='user')
 
 	def __init__(self, login, password):
 		self.login = login
 		self.password = password
 
-	def __repr__(self):
-		return "{}".format(self.login)
 
 
-def loginning(login, password):
-	if User.query.filter_by(login=login, password=password).first():
-		return True
-	return False
+class Event(db.Model):
+	__tablename__ = "event"
+	id = db.Column(db.Integer, primary_key=True)
+	description = db.Column(db.String(150), nullable=False)
+	dateofevent = db.Column(db.Date, nullable=False)
+	event_entrie_id = db.relationship('Entries', backref='event')
+
+
+	def __init__(self, description, dateofevent):
+		self.description = description
+		self.dateofevent = dateofevent
+
+
+class Admins(db.Model):
+	__tablename__ = 'admins'
+	id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+	
+
+
+class Entries(db.Model):
+	__tablename__ = 'entries'
+	__table_args__ = (
+		PrimaryKeyConstraint('user_id', 'event_id'),
+	)
+	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+	event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+	
+	def __init__(self, user_id, event_id):
+		self.user_id = user_id
+		self.event_id = event_id
+
+
+
+def getUser(login, password):
+	return User.query.filter_by(login=login, password=password).first()
+
+def getEvents():
+	return Event.query.all()
+
+def getEntries():
+	return Entries.query.all()
+
+@app.route('/main/loginEntries/', methods=["POST"])
+def loginEntries():
+	user_id = session['id']
+	event_id = request.form.get('event')
+	db.session.add(Entries(user_id, event_id))
+	db.session.commit()
+	return redirect(url_for('main'))
 
 
   
@@ -57,9 +103,12 @@ def login():
 	if request.method == "POST":
 		login = request.form.get('login')
 		password = request.form.get('password')
-		if loginning(login, password):
+		user = getUser(login, password)
+		print(user.id)
+		if user:
 			session['isAuth'] = True
 			session['login'] = login
+			session['id'] = user.id
 			return redirect(url_for('main'))
 
 	return render_template("form.html")
@@ -68,8 +117,8 @@ def login():
 def main():
 	if session['isAuth']:
 		login = session['login']
-		print(login)
-		return render_template('main.html', name=login)
+		events = getEvents()
+		return render_template('main.html', name=login, events=events)
 	return redirect(url_for('index'))
 
 
@@ -80,6 +129,3 @@ def logout():
 	return redirect(url_for('index'))
 
 
-
-# if __name__ == '__main__':
-# 	app.run()

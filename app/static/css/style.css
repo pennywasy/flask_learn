@@ -18,3 +18,42 @@ body{
 	height: 900px;
 }
 
+
+.personal__wrapper{
+	height: 70%;
+	display: flex;
+	flex-direction: column;
+	gap: 50px;
+}
+
+
+.personal__avatar{
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.personal__avatar img{
+	width: 250px;
+	height: 250px;
+}
+
+
+.form__avatar{
+	width: 60%;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+
+.events__wrapper{
+	height: 70%;
+}
+
+.form__entries{
+	width: 60%;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
