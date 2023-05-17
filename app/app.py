@@ -1,12 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, json
+from flask import Flask, render_template, request, redirect, url_for, json, session
 from flask_sqlalchemy import SQLAlchemy
 import os
 
 
 app = Flask(__name__, static_folder="static/", template_folder="html/")
+app.secret_key = 'VERYSECRET'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = -1
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://root:@localhost/learning_flask'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///C:/Users/Egorov/Documents/flask_learn/app/test.db'
 
 
 db = SQLAlchemy(app)
@@ -34,7 +35,9 @@ def loginning(login, password):
 
 
   
-
+@app.route('/', methods=["GET"])
+def index():
+	return render_template('index.html')
 
 
 @app.route('/registry/', methods=["GET", "POST"])
@@ -45,7 +48,7 @@ def registry():
 		password = request.form.get('password')
 		db.session.add(User(login, password))
 		db.session.commit()
-	return render_template("index.html")
+	return render_template("form.html")
 
 
 @app.route('/login/', methods=["GET", "POST"])
@@ -54,19 +57,27 @@ def login():
 	if request.method == "POST":
 		login = request.form.get('login')
 		password = request.form.get('password')
-		loginning(login, password)
+		if loginning(login, password):
+			session['isAuth'] = True
+			session['login'] = login
+			return redirect(url_for('main'))
 
-	return render_template("index.html")
+	return render_template("form.html")
 
-@app.route('/main', methods=["POST", "GET"])
+@app.route('/main/', methods=["POST", "GET"])
 def main():
-	# data = json.loads(request.data)
-	# if data['isAuth'] == True:
-	# 	return render_template('main.html', name=data['name'])
-	# return redirect(url_for('/login'))
-	login = request.form.get('name')
-	return render_template('main.html')
+	if session['isAuth']:
+		login = session['login']
+		print(login)
+		return render_template('main.html', name=login)
+	return redirect(url_for('index'))
 
+
+@app.route('/logout/')
+def logout():
+	session['isAuth'] = False
+	session['name'] = None
+	return redirect(url_for('index'))
 
 
 
