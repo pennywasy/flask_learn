@@ -9,8 +9,8 @@
 <body>
 	<div class="personal__wrapper">
 		<div class="personal__avatar">
-			<img src="" alt="none">
-			<form class="form__avatar" enctype="">
+			<img src="data:image/jpeg;base64,{{avatar}}" alt="none">
+			<form class="form__avatar" enctype="multipart/form-data" method="POST" action="updateAvatar"> 
 				<input type="file" name="avatar">
 				<button>Загрузить</button>
 			</form>
@@ -18,12 +18,13 @@
 		<form class="form__entries" method="POST" action="loginEntries">
 			<select name='event'>
 				{% for item in events %}
-					<option value='{{item.id}}'>{{item.description}}</option>
+					<option value='{{item.id}}'>{{item.description}}| {{item.dateofevent}}</option>
 				
 				{% endfor %}	
 			</select>
 			<button>Записаться</button>
 		</form>
+		<form action="../logout"><button>Выйти</button></form>
 	</div>
 
 	<div class="events__wrapper">
@@ -36,13 +37,33 @@
 					<th width="150px">
 						Дата
 					</th>
+					
 				</tr>
 			</thead>
 			<tbody>
-				{{for}}
+				{% for item in entries%}
+				<tr>
+					<td>{{item.description}}</td>
+					<td>{{item.dateofevent}}</td>
+					<td>
+						
+						<a href="logoutEntries/{{item.event_id}}" style="text-decoration: none;">&#10060;</a>
+					</td>
+				</tr>
+				{% endfor %}
 			</tbody>
-
 		</table>
+		{% if session['isAdmin'] %}
+			<div class="admin__wrapper">
+				<form class="admin" method="POST" action="addEvent">
+					<label>Название мероприятия</label>
+					<input type="text" name="eventName">
+					<label>Дата мероприятия</label>
+					<input type="date" name="eventDate">
+					<button>Создать мероприятие</button>
+				</form>
+			</div>
+		{%endif%}
 	</div>
 </body>
 </html>

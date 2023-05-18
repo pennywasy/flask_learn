@@ -48,11 +48,25 @@ body{
 
 
 .events__wrapper{
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
 	height: 70%;
 }
 
 .form__entries{
 	width: 60%;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
+.admin__wrapper{
+	margin-top: 50px;
+}
+
+.admin{
+/*	width: 50%;*/
 	display: flex;
 	flex-direction: column;
 	gap: 15px;
