@@ -12,7 +12,7 @@ app = Flask(__name__, static_folder="static/", template_folder="html/")
 app.secret_key = 'VERYSECRET'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = -1
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///C:/Users/Egorov/Documents/flask_learn/app/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.abspath(os.path.dirname(__file__))}/test.db'
 
 
 db = SQLAlchemy(app)
@@ -140,6 +140,7 @@ def loginEntries():
   
 @app.route('/', methods=["GET"])
 def index():
+	print(f'sqlite:///{os.path.abspath(os.path.dirname(__file__))}test.db')
 	return render_template('index.html')
 
 
